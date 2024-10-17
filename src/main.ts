@@ -1,14 +1,14 @@
-import { expose } from "synclink";
-import "./style.css";
-import WorkerConstructor from "./worker/worker?worker";
+import { expose } from 'synclink';
+import './style.css';
+import WorkerConstructor from './worker/worker?worker';
 
-const worker = new WorkerConstructor({ name: "pyodide-worker" });
+const worker = new WorkerConstructor({ name: 'pyodide-worker' });
 
 worker.addEventListener(
-  "message",
+  'message',
   (e: MessageEvent<MessagePort>) => {
     const port = e.data;
-    port.addEventListener("message", (e) => {
+    port.addEventListener('message', (e) => {
       if (Array.isArray(e.data)) {
         console.log(...e.data);
       } else {
@@ -19,13 +19,13 @@ worker.addEventListener(
     expose(
       {
         async read() {
-          return "hifehwafoi";
+          return 'hifehwafoi';
         },
       },
       port,
     );
 
-    worker.addEventListener("message", (e) => console.log(e.data));
+    worker.addEventListener('message', (e) => console.log(e.data));
   },
   { once: true },
 );
