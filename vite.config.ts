@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   optimizeDeps: {
-    include: ["synclink"],
+    include: ["synclink", "pyodide"],
   },
   plugins: [
     {
