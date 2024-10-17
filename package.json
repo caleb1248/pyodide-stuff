@@ -1,0 +1,19 @@
+{
+  "name": "pyodide-stuff",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "pyodide": "^0.26.2",
+    "synclink": "^0.2.4"
+  }
+}
