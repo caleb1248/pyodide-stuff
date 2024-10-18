@@ -1,4 +1,5 @@
 import { expose } from 'synclink';
+import { writeToStdout } from './terminal';
 import './style.css';
 import WorkerConstructor from './worker/worker?worker';
 
@@ -18,8 +19,8 @@ worker.addEventListener(
 
     expose(
       {
-        async read() {
-          return 'hifehwafoi';
+        async write(data: string) {
+          writeToStdout(data);
         },
       },
       port,

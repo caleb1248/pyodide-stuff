@@ -13,14 +13,24 @@ addEventListener('error', (e) => self.postMessage(e.error));
 const pyodide = await loadPyodide({
   indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/',
 });
-
-pyodide.setStdin({
-  stdin() {
-    return '1\\n';
-  },
-});
-console.log('init pyodide');
-
+console.log('Yes Sir!');
 setTimeout(() => {
-  const api = wrap<{ read(): string }>(channel.port1);
+  const api = wrap<{ write(data: string): void }>(channel.port1);
+  pyodide.setStdin({
+    stdin() {
+      return '1\\n';
+    },
+  });
+  console.log('init pyodide');
+  pyodide.setStdout({
+    batched(output) {
+      api.write(output).syncify();
+    },
+  });
+
+  pyodide.runPython(`
+print('hello, world!')
+x=input('hi')
+`);
+  console.log('init pyodide');
 }, 1000);
