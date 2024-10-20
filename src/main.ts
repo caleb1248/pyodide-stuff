@@ -1,5 +1,5 @@
 import { expose } from 'synclink';
-import { writeToStdout } from './terminal';
+import { readLine, writeToStdout, keyboardInterruptBuffer } from './terminal';
 import './style.css';
 import WorkerConstructor from './worker/worker?worker';
 
@@ -8,8 +8,8 @@ const worker = new WorkerConstructor({ name: 'pyodide-worker' });
 worker.addEventListener(
   'message',
   (e: MessageEvent<MessagePort>) => {
-    const port = e.data;
-    port.addEventListener('message', (e) => {
+    worker.postMessage({ interruptBuffer: keyboardInterruptBuffer });
+    worker.addEventListener('message', (e) => {
       if (Array.isArray(e.data)) {
         console.log(...e.data);
       } else {
@@ -17,16 +17,22 @@ worker.addEventListener(
       }
     });
 
+    const port = e.data;
+
     expose(
       {
-        async write(data: string) {
+        write(data: Uint8Array) {
           writeToStdout(data);
+        },
+
+        readLine,
+
+        getInterruptBuffer() {
+          return keyboardInterruptBuffer;
         },
       },
       port,
     );
-
-    worker.addEventListener('message', (e) => console.log(e.data));
   },
   { once: true },
 );

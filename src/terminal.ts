@@ -7,19 +7,21 @@ import '@xterm/xterm/css/xterm.css';
 const terminal = new Terminal({
   convertEol: true,
 });
+
 terminal.open(document.getElementById('app')!);
+
+const doNothing = () => {};
 
 // Load the fit addon
 const fitter = new FitAddon();
 terminal.loadAddon(fitter);
 window.addEventListener('resize', () => fitter.fit());
-console.log(JSON.stringify('\b'));
 
-let prompt = '$ ';
+let prompt = '';
 let currentInput = '';
 let cursor = 0;
-
-terminal.write(prompt);
+let inputEnabled = false;
+let handleEnter: (data: string) => void = doNothing;
 
 function display() {
   terminal.write(
@@ -33,6 +35,8 @@ function display() {
 }
 
 function handleInput(input: string) {
+  if (!inputEnabled) return;
+
   switch (input) {
     case '\x1b[A':
       // Cursor up a line
@@ -58,16 +62,25 @@ function handleInput(input: string) {
         cursor--;
         display();
       }
+
+      break;
+
+    case '\u0003':
+      keyboardInterruptBuffer[0] = 2;
+      terminal.write('\r\n');
+      handleEnter(currentInput);
       break;
 
     case '\r':
-      terminal.write(`\r\nYou entered: ${currentInput}\r\n`);
+      terminal.write(`\r\n`);
+      handleEnter(currentInput);
       currentInput = '';
+      prompt = '';
       cursor = 0;
       display();
       break;
+
     default:
-      console.log(JSON.stringify(input));
       // Insert a character at the current cursor
       currentInput = currentInput.slice(0, cursor) + input + currentInput.slice(cursor);
       cursor++;
@@ -75,8 +88,21 @@ function handleInput(input: string) {
   }
 }
 
+export function readLine() {
+  inputEnabled = true;
+  return new Promise<string>((resolve) => {
+    handleEnter = (data) => {
+      handleEnter = doNothing;
+      inputEnabled = false;
+      console.log(keyboardInterruptBuffer[0]);
+      resolve(data);
+    };
+  });
+}
+
+// // Paste support (Ctrl+Shift+V)
 // terminal.onKey(({ key, domEvent: e }) => {
-//   if (e.ctrlKey && key === 'v') {
+//   if (e.ctrlKey && e.shiftKey && key === 'v') {
 //     navigator.clipboard.readText().then((value) => {
 //       terminal.write(processInput(value));
 //     });
@@ -86,8 +112,24 @@ function handleInput(input: string) {
 //   return true;
 // });
 
-export function writeToStdout(data: string) {
-  terminal.writeln(data);
+const newLine = '\n'.charCodeAt(0);
+const decoder = new TextDecoder();
+
+export function writeToStdout(data: Uint8Array) {
+  terminal.write(data);
+  const lastNewlineIndex = data.lastIndexOf(newLine);
+
+  if (lastNewlineIndex !== -1) {
+    if (lastNewlineIndex == data.length - 1) {
+      prompt = '';
+    } else {
+      prompt = decoder.decode(data.slice(lastNewlineIndex + 1));
+    }
+  } else {
+    prompt += decoder.decode(data);
+  }
 }
 
 terminal.onData(handleInput);
+
+export const keyboardInterruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
