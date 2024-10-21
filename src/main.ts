@@ -1,6 +1,7 @@
 import { expose } from 'synclink';
 import { readLine, writeToStdout, keyboardInterruptBuffer } from './terminal';
 import './style.css';
+import './editor';
 import WorkerConstructor from './worker/worker?worker';
 
 const worker = new WorkerConstructor({ name: 'pyodide-worker' });

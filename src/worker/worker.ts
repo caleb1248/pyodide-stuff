@@ -44,14 +44,13 @@ pyodide.setStdout({
 
 pyodide.setStderr({
   write(buffer) {
-    console.log('length', buffer.length);
     api.write(buffer).syncify();
     return buffer.length;
   },
 });
 
 pyodide.setInterruptBuffer(interruptBuffer);
-console.log('init pyodide');
+console.log('Initialized pyodide');
 
 setTimeout(() => {
   pyodide
@@ -61,9 +60,9 @@ print('Hello, world!')
 x=input('What is your name? ')
 print('Hi ' + x + '!')
 `,
+      { filename: 'main.py' },
     )
     .catch((e) => {
       api.write(new TextEncoder().encode('\x1b[0;31m' + e.message + '\x1b[0m')).syncify();
     });
-  setTimeout(() => console.log(interruptBuffer[0]), 1000);
 }, 1000);

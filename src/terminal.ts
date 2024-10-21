@@ -8,7 +8,7 @@ const terminal = new Terminal({
   convertEol: true,
 });
 
-terminal.open(document.getElementById('app')!);
+terminal.open(document.getElementById('terminal')!);
 
 const doNothing = () => {};
 
