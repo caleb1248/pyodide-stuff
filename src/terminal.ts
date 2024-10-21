@@ -6,6 +6,8 @@ import '@xterm/xterm/css/xterm.css';
 // Create the terminal
 const terminal = new Terminal({
   convertEol: true,
+  letterSpacing: 0,
+  fontFamily: 'JetBrains Mono, monospace',
 });
 
 terminal.open(document.getElementById('terminal')!);
@@ -16,6 +18,7 @@ const doNothing = () => {};
 const fitter = new FitAddon();
 terminal.loadAddon(fitter);
 window.addEventListener('resize', () => fitter.fit());
+fitter.fit();
 
 let prompt = '';
 let currentInput = '';

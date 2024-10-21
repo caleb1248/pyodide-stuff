@@ -21,8 +21,9 @@ self.MonacoEnvironment = {
 
 const editor = monaco.editor.create(document.getElementById('editor')!, {
   theme: 'vs-dark',
-  automaticLayout: true,
 });
+
+window.addEventListener('resize', () => editor.layout());
 
 connection.onRequest(ApplyWorkspaceEditRequest.type, (params) => {
   console.error('Workspace edit ' + params.label + 'requested', params.edit.changes);
