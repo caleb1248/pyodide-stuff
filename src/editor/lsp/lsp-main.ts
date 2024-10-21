@@ -33,7 +33,7 @@ class BrowserMessageReader extends AbstractMessageReader implements MessageReade
     this.onUnknownMessage = this._unknownMessageEmitter.event;
 
     this._worker.addEventListener('error', (e) => this.fireError(e));
-    this._worker.addEventListener('message', (e) => console.log(e.data));
+    // this._worker.addEventListener('message', (e) => console.log(e.data));
   }
   listen(callback: DataCallback): Disposable {
     const listener = (e: MessageEvent<unknown>) => {
