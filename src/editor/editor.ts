@@ -11,6 +11,7 @@ import {
 import { registerCompletionProvider } from './glue/completion';
 import registerHoverProvider from './glue/hover';
 import registerDiagnosticPublisher from './glue/diagnostics';
+import registerSignatureHelpProvider from './glue/callSignature';
 connection;
 
 self.MonacoEnvironment = {
@@ -44,6 +45,10 @@ function registerServerCapabilities(capabilities: ServerCapabilities) {
 
   if (capabilities.completionProvider) {
     registerCompletionProvider(connection, capabilities.completionProvider);
+  }
+
+  if (capabilities.signatureHelpProvider) {
+    registerSignatureHelpProvider(connection, capabilities.signatureHelpProvider);
   }
 }
 
